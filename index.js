@@ -22,14 +22,24 @@ app.post("/api/email", (req, res, next) => {
   //if get email from client side
   //save email to file
   const email = req.body.email;
-  fs.appendFile("email.txt", email + "\n", function (err) {
-    if (err) {
-      throw err;
+  fs.readFile("email.txt", function (err, data) {
+    if (err) throw err;
+    if (data.includes(email)) {
+      //if this email is already exist
+      return res.send({
+        type: "repeated",
+      });
+    } else {
+      fs.appendFile("email.txt", email + "\n", function (err) {
+        if (err) {
+          throw err;
+        }
+        console.log("Saved " + email);
+        return res.send({
+          type: "success",
+        });
+      });
     }
-    console.log("Saved " + email);
-    return res.send({
-      type: "success",
-    });
   });
 });
 
